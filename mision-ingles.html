@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misión Inglés: Repaso Oral</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap');
+
+  :root{
+    color-scheme: dark;
+    --space:#12152B;
+    --space-deep:#0A0C1C;
+    --panel:#1E2350;
+    --nebula:#9B7DFF;
+    --star:#FFD873;
+    --planet:#FF7B7B;
+    --mint:#5CE0D6;
+    --paper:#FFFCF5;
+    --ink:#12152B;
+    --dim:#C4C1EC;
+    --his:#8FD9FF;
+    --her:#FF9BC4;
+  }
+
+  *{box-sizing:border-box;}
+  html{
+    scroll-behavior:smooth;
+    background:var(--space-deep);
+  }
+  body{
+    margin:0;
+    background:var(--space);
+    color:var(--paper);
+    font-family:'Nunito',sans-serif;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{
+    font-family:'Baloo 2',cursive;
+    font-weight:800;
+  }
+
+  /* starfield */
+  .stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-color:var(--space);
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+      radial-gradient(2px 2px at 140px 90px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 60px 160px, #fff, transparent),
+      radial-gradient(2px 2px at 200px 220px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 260px 60px, #fff, transparent),
+      radial-gradient(2px 2px at 320px 180px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 350px 40px, #fff, transparent);
+    background-repeat:repeat; background-size:400px 260px;
+    opacity:.5;
+  }
+
+  .wrap{position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 18px 80px; background:transparent;}
+
+  /* HERO */
+  .hero{
+    text-align:center;
+    padding:48px 12px 30px;
+  }
+  .badge{
+    display:inline-block;
+    background:var(--nebula);
+    color:#fff;
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.5px;
+    padding:6px 16px;
+    border-radius:999px;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(30px,7vw,52px);
+    margin:6px 0;
+    line-height:1.05;
+    color:var(--star);
+    text-shadow:3px 3px 0 var(--planet);
+  }
+  .hero p{
+    font-size:18px;
+    color:var(--paper);
+    max-width:520px;
+    margin:14px auto 0;
+  }
+  .rocket{
+    font-size:54px;
+    display:inline-block;
+    animation: float 2.4s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0) rotate(-4deg); }
+    50%{ transform: translateY(-14px) rotate(4deg); }
+  }
+
+  /* progress track */
+  .track{
+    display:flex; justify-content:center; gap:10px; margin:26px 0 6px; flex-wrap:wrap;
+  }
+  .track .nav-btn{
+    text-decoration:none;
+    color:var(--paper);
+    background:var(--panel);
+    border:2px solid rgba(255,255,255,.22);
+    padding:8px 14px;
+    border-radius:14px;
+    font-family:'Baloo 2';
+    font-size:14px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .track .nav-btn:hover{ background:var(--nebula); border-color:var(--nebula); transform:translateY(-2px); }
+
+  /* SECTION shell */
+  .planet{
+    margin-top:64px;
+    scroll-margin-top:20px;
+  }
+  .planet-head{
+    display:flex; align-items:center; gap:14px; margin-bottom:22px;
+  }
+  .planet-icon{
+    font-size:40px;
+    width:64px; height:64px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--panel);
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .planet-head h2{ font-size:26px; margin:0; color:#fff;}
+  .planet-head span{ display:block; font-size:14px; font-weight:700; color:var(--dim); font-family:'Nunito';}
+
+  /* VOCAB CARDS */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:14px;
+  }
+  .flashcard{
+    perspective:1000px;
+    height:170px;
+    cursor:pointer;
+  }
+  .flashcard-inner{
+    position:relative; width:100%; height:100%;
+    transition:transform .5s;
+    transform-style:preserve-3d;
+    -webkit-transform-style:preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0;
+    border-radius:18px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    transform:translateZ(0) rotateY(0deg);
+    -webkit-transform:translateZ(0) rotateY(0deg);
+    padding:10px;
+    text-align:center;
+  }
+  .face-front{
+    background:var(--panel);
+    border:2px solid rgba(255,255,255,.16);
+    color:var(--paper);
+  }
+  .face-front .emoji{ font-size:44px; margin-bottom:8px;}
+  .face-front .word{ font-family:'Baloo 2'; font-weight:700; font-size:18px; color:var(--star);}
+  .face-back{
+    background:var(--mint);
+    color:var(--ink);
+    transform:rotateY(180deg) translateZ(0);
+    -webkit-transform:rotateY(180deg) translateZ(0);
+  }
+  .face-back .es{ font-family:'Baloo 2'; font-weight:700; font-size:19px;}
+  .face-back .pron{ font-size:14px; margin-top:6px; font-weight:700; opacity:.85;}
+  .speak-btn{
+    margin-top:10px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:6px 14px;
+    font-family:'Baloo 2';
+    font-size:13px;
+    cursor:pointer;
+  }
+  .speak-btn:active{ transform:scale(.95); }
+  .hint{ font-size:12px; color:var(--dim); margin-top:2px; }
+
+  /* NUMBERS */
+  .num-controls{
+    display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .pill-btn{
+    background:var(--nebula); color:#fff; border:none; border-radius:999px;
+    padding:10px 18px; font-family:'Baloo 2'; font-size:14px; cursor:pointer;
+  }
+  .pill-btn.alt{ background:var(--planet); color:var(--ink); }
+  .num-grid{
+    display:grid;
+    grid-template-columns:repeat(10,1fr);
+    gap:6px;
+  }
+  .num-cell{
+    background:var(--panel);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:8px;
+    text-align:center;
+    padding:8px 2px;
+    font-family:'Baloo 2';
+    font-weight:700;
+    font-size:13px;
+    cursor:pointer;
+    color:var(--paper);
+    transition:.15s;
+  }
+  .num-cell:hover{ background:var(--mint); color:var(--ink); transform:scale(1.08); }
+  .num-cell.ten{ background:rgba(255,216,115,.22); border-color:var(--star); color:var(--star); }
+  .num-quiz-box{
+    margin-top:22px;
+    background:linear-gradient(155deg,var(--panel),var(--space-deep));
+    border:2px solid rgba(255,255,255,.16);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+  }
+  #quizNumber{ font-size:46px; font-family:'Baloo 2'; color:var(--star); margin:10px 0;}
+  #quizAnswer{ font-size:16px; min-height:24px; font-weight:800; color:var(--mint); }
+
+  /* QUESTIONS */
+  .dialogue{
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .qcard{
+    background:linear-gradient(155deg,var(--panel),var(--space-deep));
+    border:2px solid rgba(255,255,255,.16);
+    border-radius:18px;
+    padding:16px 18px;
+  }
+  .qcard .q{
+    font-family:'Baloo 2'; font-weight:700; font-size:17px; color:var(--star);
+    display:flex; align-items:center; gap:8px; justify-content:space-between;
+  }
+  .qcard .a{
+    margin-top:8px; font-size:15px; color:var(--mint); font-weight:700;
+    display:none;
+    padding-top:8px;
+    border-top:1px dashed rgba(255,255,255,.2);
+  }
+  .qcard.open .a{ display:block; }
+  .qcard .example{
+    margin-top:8px; font-size:13px; color:var(--dim); font-style:italic;
+  }
+  .tap-note{ font-size:12px; color:var(--dim); }
+  .mini-speak{
+    background:rgba(255,255,255,.14); border:none; border-radius:50%;
+    width:34px; height:34px; color:#fff; font-size:15px; cursor:pointer; flex-shrink:0;
+  }
+
+  /* QUIZ FINAL */
+  .quiz-wrap{
+    background:linear-gradient(155deg,#2C2470,var(--space-deep));
+    border:2px solid var(--nebula);
+    border-radius:22px;
+    padding:26px 20px;
+    text-align:center;
+  }
+  #stars{ font-size:26px; margin:12px 0; letter-spacing:6px; }
+  #quizStage{ min-height:120px; }
+  .opt-btn{
+    display:block; width:100%; max-width:340px; margin:8px auto;
+    background:#fff; color:var(--ink); border:none; border-radius:14px;
+    padding:12px; font-family:'Baloo 2'; font-weight:700; font-size:16px; cursor:pointer;
+  }
+  .opt-btn.correct{ background:var(--mint); color:var(--ink); }
+  .opt-btn.wrong{ background:var(--planet); color:var(--ink); }
+  #quizQ{ font-size:19px; font-family:'Baloo 2'; color:var(--star); margin-bottom:10px;}
+  #quizEmoji{ font-size:52px; margin-bottom:6px; }
+
+  footer{
+    text-align:center; color:var(--dim); font-size:13px; margin-top:60px;
+  }
+
+  /* ---- ÁRBOL FAMILIAR (integrado) ---- */
+  .rule-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .rule-grid{ grid-template-columns:1fr; } }
+  .rule-card{ border-radius:18px; padding:18px; border:3px solid; background:var(--panel); }
+  .rule-card.his-card{ border-color:var(--his); }
+  .rule-card.her-card{ border-color:var(--her); }
+  .rule-card .tag{
+    display:inline-block; font-family:'Baloo 2'; font-weight:800; font-size:22px;
+    padding:4px 14px; border-radius:10px; margin-bottom:8px; color:var(--ink);
+  }
+  .his-card .tag{ background:var(--his); }
+  .her-card .tag{ background:var(--her); }
+  .rule-card p{ margin:6px 0; font-size:15px; color:var(--paper); }
+  .rule-card .example{ margin-top:8px; font-family:'Baloo 2'; font-size:16px; }
+  .his-card .example{ color:var(--his); }
+  .her-card .example{ color:var(--her); }
+
+  .check-list{ margin-top:18px; display:flex; flex-direction:column; gap:10px; }
+  .check-item{ background:var(--panel); border:2px solid rgba(255,255,255,.16); border-radius:14px; padding:12px 16px; }
+  .check-item .sentence{ font-size:15px; margin-bottom:8px; }
+  .check-btns{ display:flex; gap:8px; }
+  .check-btn{
+    flex:1; border:none; border-radius:10px; padding:9px; font-family:'Baloo 2';
+    font-weight:700; font-size:14px; cursor:pointer; color:var(--ink);
+  }
+  .check-btn.his-btn{ background:var(--his); }
+  .check-btn.her-btn{ background:var(--her); }
+  .check-btn.correct{ outline:3px solid var(--mint); }
+  .check-btn.wrong{ outline:3px solid #444; opacity:.5; }
+  .check-feedback{ margin-top:6px; font-size:13px; font-weight:700; min-height:16px; }
+
+  .tree-row-label{
+    text-align:center; font-family:'Baloo 2'; font-size:13px; color:var(--dim);
+    margin:22px 0 10px; letter-spacing:.5px; text-transform:uppercase;
+  }
+  .tree-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; }
+  .member-card{
+    background:linear-gradient(160deg,var(--panel),var(--space-deep));
+    border:2px solid rgba(255,255,255,.16); border-radius:18px;
+    padding:14px; text-align:center; cursor:pointer; transition:.2s;
+  }
+  .member-card:hover{ transform:translateY(-3px); border-color:var(--star); }
+  .member-card .emoji{ font-size:42px; }
+  .member-card .rel{ font-family:'Baloo 2'; font-weight:700; color:var(--star); font-size:16px; margin-top:4px; }
+  .member-card .name{ font-size:14px; color:var(--paper); }
+  .member-card .age{ font-size:12px; color:var(--dim); }
+  .member-card .pron-tag{
+    display:inline-block; margin-top:6px; font-size:11px; font-weight:800;
+    padding:2px 8px; border-radius:8px; color:var(--ink);
+  }
+  .member-card.gender-f .pron-tag{ background:var(--her); }
+  .member-card.gender-m .pron-tag{ background:var(--his); }
+
+  .detail-panel{
+    display:none; margin-top:24px; background:linear-gradient(155deg,var(--panel),var(--space-deep));
+    border:2px solid var(--star); border-radius:20px; padding:20px;
+  }
+  .detail-panel.open{ display:block; }
+  .detail-head{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .detail-head .emoji{ font-size:48px; }
+  .detail-head h3{ margin:0; color:var(--star); font-size:20px; }
+  .detail-head .sub{ font-size:13px; color:var(--dim); }
+  .qa-row2{ background:var(--panel); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:12px 14px; margin-bottom:10px; }
+  .qa-row2 .q{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    font-family:'Baloo 2'; font-weight:700; color:var(--mint); font-size:15px;
+  }
+  .qa-row2 .a{ margin-top:6px; font-weight:700; color:var(--star); font-size:14px; cursor:pointer; }
+  .close-detail{
+    margin-top:6px; background:var(--planet); color:var(--ink); border:none;
+    border-radius:999px; padding:8px 16px; font-family:'Baloo 2'; font-weight:700; cursor:pointer;
+  }
+
+  .yesno-row{ display:flex; gap:12px; justify-content:center; margin-top:8px; }
+  .yesno-btn{
+    background:var(--panel); color:#fff; border:2px solid rgba(255,255,255,.2);
+    border-radius:14px; padding:12px 26px; font-family:'Baloo 2'; font-weight:700;
+    font-size:16px; cursor:pointer;
+  }
+  .yesno-btn.correct{ background:var(--mint); color:var(--ink); border-color:var(--mint); }
+  .yesno-btn.wrong{ background:var(--planet); color:var(--ink); border-color:var(--planet); }
+  #familyQuizFeedback{ margin-top:10px; font-weight:800; min-height:20px; color:var(--mint); }
+
+  @media (max-width:520px){
+    .num-grid{ grid-template-columns:repeat(5,1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge">🚀 MISIÓN ESPECIAL DE INGLÉS</div>
+    <div class="rocket">🚀</div>
+    <h1>¡Súper Repaso de Inglés!</h1>
+    <p>Tu nave va a viajar por 3 planetas para prepararte para el examen oral. Tocá las tarjetas, escuchá la pronunciación y jugá los desafíos. ¡Vamos, astronauta! 🌟</p>
+  </div>
+
+  <div class="track">
+    <button type="button" class="nav-btn" data-target="planeta-vocab">🪐 Vocabulario</button>
+    <button type="button" class="nav-btn" data-target="planeta-numeros">🔢 Números</button>
+    <button type="button" class="nav-btn" data-target="planeta-preguntas">💬 Preguntas</button>
+    <button type="button" class="nav-btn" data-target="planeta-arbol">🌳 Árbol Familiar</button>
+    <button type="button" class="nav-btn" data-target="planeta-quiz">🏆 Desafío final</button>
+  </div>
+
+  <!-- VOCABULARY -->
+  <section class="planet" id="planeta-vocab">
+    <div class="planet-head">
+      <div class="planet-icon">🪐</div>
+      <div>
+        <h2>Planeta Vocabulario</h2>
+        <span>Tocá cada tarjeta para ver la traducción. Apretá el botón 🔊 para escuchar cómo se dice en inglés.</span>
+      </div>
+    </div>
+    <div class="grid" id="vocabGrid"></div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section class="planet" id="planeta-numeros">
+    <div class="planet-head">
+      <div class="planet-icon">🔢</div>
+      <div>
+        <h2>Planeta Números</h2>
+        <span>Del 1 al 100. Tocá cualquier número para escucharlo en inglés.</span>
+      </div>
+    </div>
+    <div class="num-controls">
+      <button class="pill-btn" onclick="speakRange()">🔊 Escuchar del 1 al 20</button>
+      <button class="pill-btn alt" onclick="newNumberChallenge()">🎯 Desafío: ¿Cómo se dice...?</button>
+    </div>
+    <div class="num-grid" id="numGrid"></div>
+
+    <div class="num-quiz-box">
+      <div style="font-family:'Baloo 2'; color:var(--star);">¿Cómo se dice este número en inglés?</div>
+      <div id="quizNumber">--</div>
+      <button class="pill-btn" onclick="revealNumberAnswer()">👀 Ver / escuchar respuesta</button>
+      <div id="quizAnswer"></div>
+    </div>
+  </section>
+
+  <!-- QUESTIONS -->
+  <section class="planet" id="planeta-preguntas">
+    <div class="planet-head">
+      <div class="planet-icon">💬</div>
+      <div>
+        <h2>Planeta Preguntas</h2>
+        <span>Tocá cada pregunta para ver cómo se responde. El 🔊 la lee en voz alta.</span>
+      </div>
+    </div>
+    <p class="tap-note">👆 Tip: practicá leyendo la pregunta en voz alta antes de tocarla para ver la respuesta.</p>
+    <div class="dialogue" id="qaList"></div>
+  </section>
+
+  <!-- FAMILY TREE (integrado) -->
+  <section class="planet" id="planeta-arbol">
+    <div class="planet-head">
+      <div class="planet-icon">🌳</div>
+      <div>
+        <h2>Árbol Familiar: La Familia de Mía</h2>
+        <span>Conocé a esta familia inventada y practicá las preguntas completas con Yes / No.</span>
+      </div>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card his-card">
+        <div class="tag">HIS 🔵</div>
+        <p>Se usa cuando el dueño es <strong>un varón</strong> (un chico o un hombre).</p>
+        <p>"His" = su (de él)</p>
+        <div class="example">His name is Robert. → El nombre de él es Robert.</div>
+      </div>
+      <div class="rule-card her-card">
+        <div class="tag">HER 🌸</div>
+        <p>Se usa cuando el dueño es <strong>una mujer</strong> (una chica o una mujer).</p>
+        <p>"Her" = su (de ella)</p>
+        <div class="example">Her name is Alice. → El nombre de ella es Alice.</div>
+      </div>
+    </div>
+    <p class="tap-note">👆 Truco: mirá si la persona de la que hablás es varón (HIS) o mujer (HER), no la persona que escucha.</p>
+    <div class="check-list" id="checkList"></div>
+
+    <div class="tree-row-label">Abuelos</div>
+    <div class="tree-row" id="rowGrandparents"></div>
+
+    <div class="tree-row-label">Papás, tía y tío</div>
+    <div class="tree-row" id="rowParents"></div>
+
+    <div class="tree-row-label">Hermanos y prima</div>
+    <div class="tree-row" id="rowKids"></div>
+
+    <p class="tap-note">👆 Tocá cualquier tarjeta para ver y escuchar las 4 preguntas típicas sobre esa persona.</p>
+    <div class="detail-panel" id="detailPanel"></div>
+
+    <div class="num-quiz-box" style="margin-top:30px;">
+      <div style="font-family:'Baloo 2'; color:var(--star);">🏆 Practicá vos: preguntas al azar sobre la familia de Mía</div>
+      <div id="familyStars" style="font-size:24px; margin:10px 0; letter-spacing:6px;">☆☆☆☆☆☆☆☆☆☆</div>
+      <div id="familyQuizStage"></div>
+      <div id="familyQuizFeedback"></div>
+    </div>
+  </section>
+
+  <!-- FINAL QUIZ -->
+  <section class="planet" id="planeta-quiz">
+    <div class="planet-head">
+      <div class="planet-icon">🏆</div>
+      <div>
+        <h2>Desafío Final</h2>
+        <span>Respondé y ganá estrellas. ¡A ver cuántas juntás!</span>
+      </div>
+    </div>
+    <div class="quiz-wrap">
+      <div id="stars">☆☆☆☆☆</div>
+      <div id="quizStage"></div>
+    </div>
+  </section>
+
+  <footer>Hecho con 💜 para despegar en el examen oral · Misión Inglés</footer>
+</div>
+
+<script>
+/* ---------- NAV ---------- */
+document.querySelectorAll('.nav-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const target = document.getElementById(btn.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+/* ---------- SPEECH ---------- */
+let englishVoice = null;
+const femaleNameHints = ['female','samantha','victoria','zira','susan','karen','moira','tessa','fiona','allison','ava','sara','kate','amy','emma','joanna','salli','kendra','kimberly','olivia','hazel','serena','libby','google uk english female','google us english','microsoft zira','microsoft hazel','microsoft libby'];
+function pickVoice(){
+  const voices = speechSynthesis.getVoices();
+  const britishVoices = voices.filter(v => v.lang === 'en-GB');
+  const englishVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+  const britishFemale = britishVoices.find(v => femaleNameHints.some(hint => v.name.toLowerCase().includes(hint)));
+  const anyFemale = englishVoices.find(v => femaleNameHints.some(hint => v.name.toLowerCase().includes(hint)));
+  englishVoice = britishFemale
+    || britishVoices[0]
+    || anyFemale
+    || englishVoices.find(v => v.lang === 'en-US')
+    || englishVoices[0]
+    || null;
+}
+if ('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged = pickVoice;
+  pickVoice();
+}
+
+function speak(text, rate){
+  if (!('speechSynthesis' in window)) return;
+  rate = rate || 0.85;
+  speechSynthesis.cancel();
+  // Reemplaza "/" por una pausa (coma) en vez de que la voz diga "slash"
+  const spokenText = text.replace(/\s*\/\s*/g, ', ');
+  const u = new SpeechSynthesisUtterance(spokenText);
+  u.lang = 'en-GB';
+  u.rate = rate;
+  if(englishVoice) u.voice = englishVoice;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- VOCAB DATA ---------- */
+const vocab = [
+  {emoji:'💎👂', en:'Earrings', es:'Aros', pron:'se dice: IAR-rings'},
+  {emoji:'👱', en:'Blonde hair', es:'Pelo rubio', pron:'se dice: BLOND jer'},
+  {emoji:'👓', en:'Glasses', es:'Anteojos', pron:'se dice: GLÁ-ses'},
+  {emoji:'🦷', en:'Teeth', es:'Dientes', pron:'se dice: TIIZ'},
+  {emoji:'🧒', en:'Young', es:'Joven', pron:'se dice: IANG'},
+  {emoji:'👴', en:'Old', es:'Viejo/a', pron:'se dice: OULD'},
+  {emoji:'😍', en:'Beautiful', es:'Hermoso/a', pron:'se dice: BIÚ-ti-ful'},
+  {emoji:'🤢', en:'Ugly', es:'Feo/a', pron:'se dice: ÓG-li'},
+  {emoji:'🥸', en:'Moustache', es:'Bigote', pron:'se dice: mos-TASH'},
+  {emoji:'🧔', en:'Beard', es:'Barba', pron:'se dice: BIRD (cuidado, no es "bird" de pájaro)'},
+  {emoji:'👵', en:'Grandma', es:'Abuela', pron:'se dice: GRAN-ma'},
+  {emoji:'👨‍🦳', en:'Grandpa', es:'Abuelo', pron:'se dice: GRAN-pa'},
+  {emoji:'👨', en:'Uncle', es:'Tío', pron:'se dice: ANG-kel'},
+  {emoji:'👩', en:'Aunt', es:'Tía', pron:'se dice: AHNT (en inglés británico, no "ant" como en EE.UU.)'},
+  {emoji:'🧑', en:'Cousin', es:'Primo/a', pron:'se dice: KA-sin'},
+  {emoji:'👩‍🦰', en:'Mum', es:'Mamá', pron:'se dice: MAM (en inglés británico se escribe "Mum", no "Mom")'},
+  {emoji:'👨‍🦱', en:'Dad', es:'Papá', pron:'se dice: DAD'},
+  {emoji:'👧', en:'Sister', es:'Hermana', pron:'se dice: SIS-ter'},
+  {emoji:'👦', en:'Brother', es:'Hermano', pron:'se dice: BRA-der'},
+];
+
+const vocabGrid = document.getElementById('vocabGrid');
+vocab.forEach(function(v){
+  const card = document.createElement('div');
+  card.className = 'flashcard';
+
+  const inner = document.createElement('div');
+  inner.className = 'flashcard-inner';
+
+  const front = document.createElement('div');
+  front.className = 'face face-front';
+  front.innerHTML =
+    '<div class="emoji">' + v.emoji + '</div>' +
+    '<div class="word">' + v.en + '</div>' +
+    '<div class="hint">tocá para traducir</div>';
+
+  const back = document.createElement('div');
+  back.className = 'face face-back';
+  const esDiv = document.createElement('div');
+  esDiv.className = 'es';
+  esDiv.textContent = v.es;
+  const pronDiv = document.createElement('div');
+  pronDiv.className = 'pron';
+  pronDiv.textContent = v.pron;
+  const btn = document.createElement('button');
+  btn.className = 'speak-btn';
+  btn.type = 'button';
+  btn.textContent = '🔊 Escuchar';
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    speak(v.en);
+  });
+  back.appendChild(esDiv);
+  back.appendChild(pronDiv);
+  back.appendChild(btn);
+
+  inner.appendChild(front);
+  inner.appendChild(back);
+  card.appendChild(inner);
+
+  card.addEventListener('click', function(){ card.classList.toggle('flipped'); });
+  vocabGrid.appendChild(card);
+});
+
+/* ---------- NUMBERS ---------- */
+const numberWords = ['zero','one','two','three','four','five','six','seven','eight','nine','ten',
+'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+const tensWords = {20:'twenty',30:'thirty',40:'forty',50:'fifty',60:'sixty',70:'seventy',80:'eighty',90:'ninety',100:'one hundred'};
+
+function numberToWords(n){
+  if(n <= 20) return numberWords[n];
+  if(n % 10 === 0) return tensWords[n];
+  const tens = Math.floor(n/10)*10;
+  const unit = n % 10;
+  return tensWords[tens] + '-' + numberWords[unit];
+}
+
+const numGrid = document.getElementById('numGrid');
+for(let i=1;i<=100;i++){
+  const cell = document.createElement('div');
+  cell.className = 'num-cell' + (i%10===0 ? ' ten' : '');
+  cell.textContent = i;
+  cell.addEventListener('click', (function(num){ return function(){ speak(numberToWords(num)); }; })(i));
+  numGrid.appendChild(cell);
+}
+
+let speakRangeTimer = null;
+function speakRange(){
+  let i = 1;
+  if (speakRangeTimer) clearInterval(speakRangeTimer);
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  speakRangeTimer = setInterval(function(){
+    if(i>20){ clearInterval(speakRangeTimer); return; }
+    speak(numberToWords(i), 0.9);
+    i++;
+  }, 850);
+}
+
+let currentChallengeNum = null;
+function newNumberChallenge(){
+  currentChallengeNum = Math.floor(Math.random()*100)+1;
+  document.getElementById('quizNumber').textContent = currentChallengeNum;
+  document.getElementById('quizAnswer').textContent = '';
+}
+function revealNumberAnswer(){
+  if(currentChallengeNum === null) newNumberChallenge();
+  const word = numberToWords(currentChallengeNum);
+  document.getElementById('quizAnswer').textContent = word;
+  speak(word);
+}
+newNumberChallenge();
+
+/* ---------- QUESTIONS ---------- */
+const qas = [
+  {q:'Who is she/he?', a:'She is my.../He is my...', ex:'Ej: Who is she? She is my grandma.'},
+  {q:"What's her/his name?", a:'Her name is.../His name is...', ex:"Ej: What's her name? Her name is Victorina."},
+  {q:'How old is he/she?', a:'She is ... years old.', ex:'Ej: How old is she? She is seventy years old.'},
+  {q:'Is he your uncle?', a:'Yes, he is.', ex:'Ej: Is he your uncle? Yes, he is.'},
+  {q:'Is he your cousin?', a:"No, he isn't.", ex:"Ej: Is he your cousin? No, he isn't. He is my uncle."},
+  {q:'Is she your aunt?', a:"Yes, she is. / No, she isn't.", ex:'Ej: Is she your aunt? Yes, she is.'},
+  {q:'Have you got cousins? How many?', a:"Yes, I have. / No, I haven't.", ex:'Ej: Have you got cousins? Yes, I have. I have got three cousins.'},
+  {q:'What is that?', a:"It's a moustache. (o cualquier palabra del vocabulario)", ex:"Ej: What is that? It's a pair of glasses."},
+];
+
+const qaList = document.getElementById('qaList');
+qas.forEach(function(item){
+  const card = document.createElement('div');
+  card.className = 'qcard';
+
+  const qRow = document.createElement('div');
+  qRow.className = 'q';
+  const qSpan = document.createElement('span');
+  qSpan.textContent = '❓ ' + item.q;
+  const speakBtn = document.createElement('button');
+  speakBtn.className = 'mini-speak';
+  speakBtn.type = 'button';
+  speakBtn.textContent = '🔊';
+  speakBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    speak(item.q);
+  });
+  qRow.appendChild(qSpan);
+  qRow.appendChild(speakBtn);
+
+  const aDiv = document.createElement('div');
+  aDiv.className = 'a';
+  aDiv.textContent = '✅ ' + item.a;
+
+  const exDiv = document.createElement('div');
+  exDiv.className = 'a example';
+  exDiv.textContent = item.ex;
+
+  card.appendChild(qRow);
+  card.appendChild(aDiv);
+  card.appendChild(exDiv);
+
+  card.addEventListener('click', function(){ card.classList.toggle('open'); });
+  qaList.appendChild(card);
+});
+
+/* ---------- FINAL QUIZ ---------- */
+const quizItems = [
+  {emoji:'👓', q:'¿Cómo se dice "anteojos" en inglés?', options:['Glasses','Teeth','Beard'], correct:'Glasses'},
+  {emoji:'👴', q:'¿Cómo se dice "viejo" en inglés?', options:['Young','Old','Ugly'], correct:'Old'},
+  {emoji:'😍', q:'¿Cómo se dice "hermoso" en inglés?', options:['Ugly','Beautiful','Old'], correct:'Beautiful'},
+  {emoji:'🔢', q:'¿Cómo se dice el número 15 en inglés?', options:['Fifty','Fifteen','Five'], correct:'Fifteen'},
+  {emoji:'🔢', q:'¿Cómo se dice el número 30 en inglés?', options:['Thirteen','Three','Thirty'], correct:'Thirty'},
+  {emoji:'👵', q:'¿Cómo se dice "abuela" en inglés?', options:['Grandpa','Grandma','Aunt'], correct:'Grandma'},
+  {emoji:'👨‍🦳', q:'¿Cómo se dice "abuelo" en inglés?', options:['Grandma','Grandpa','Uncle'], correct:'Grandpa'},
+  {emoji:'👨', q:'¿Cómo se dice "tío" en inglés?', options:['Cousin','Aunt','Uncle'], correct:'Uncle'},
+  {emoji:'👩', q:'¿Cómo se dice "tía" en inglés (como se dice en Inglaterra)?', options:['Ant','Aunt','Uncle'], correct:'Aunt'},
+  {emoji:'🧑', q:'¿Cómo se dice "primo/a" en inglés?', options:['Cousin','Brother','Sister'], correct:'Cousin'},
+  {emoji:'🔢', q:'Tu abuela tiene 70 años. ¿Cómo se dice en inglés?', options:['Seventeen','Seventy','Seven'], correct:'Seventy'},
+  {emoji:'❓', q:'Te preguntan "Is he your cousin?" y NO lo es. ¿Qué respondés?', options:["Yes, he is.","No, he isn't.","She is my cousin."], correct:"No, he isn't."},
+];
+
+let quizIndex = 0;
+let starCount = 0;
+
+function renderQuiz(){
+  const stage = document.getElementById('quizStage');
+  stage.innerHTML = '';
+
+  if(quizIndex >= quizItems.length){
+    const doneTitle = document.createElement('div');
+    doneTitle.style.fontFamily = "'Baloo 2'";
+    doneTitle.style.fontSize = '22px';
+    doneTitle.style.color = 'var(--star)';
+    doneTitle.textContent = '🎉 ¡Misión cumplida, astronauta! 🎉';
+
+    const doneText = document.createElement('p');
+    doneText.style.color = 'var(--paper)';
+    doneText.textContent = 'Conseguiste ' + starCount + ' de ' + quizItems.length + ' estrellas.';
+
+    const again = document.createElement('button');
+    again.className = 'pill-btn';
+    again.type = 'button';
+    again.textContent = '🔁 Jugar de nuevo';
+    again.addEventListener('click', function(){
+      quizIndex = 0; starCount = 0; updateStars(); renderQuiz();
+    });
+
+    stage.appendChild(doneTitle);
+    stage.appendChild(doneText);
+    stage.appendChild(again);
+    return;
+  }
+
+  const item = quizItems[quizIndex];
+
+  const emojiDiv = document.createElement('div');
+  emojiDiv.id = 'quizEmoji';
+  emojiDiv.textContent = item.emoji;
+
+  const qDiv = document.createElement('div');
+  qDiv.id = 'quizQ';
+  qDiv.textContent = item.q;
+
+  const box = document.createElement('div');
+  box.id = 'optsBox';
+
+  stage.appendChild(emojiDiv);
+  stage.appendChild(qDiv);
+  stage.appendChild(box);
+
+  const shuffled = item.options.slice().sort(function(){ return Math.random()-0.5; });
+  shuffled.forEach(function(opt){
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.type = 'button';
+    btn.textContent = opt;
+    btn.addEventListener('click', function(){
+      const buttons = box.querySelectorAll('.opt-btn');
+      buttons.forEach(function(b){ b.disabled = true; });
+      if(opt === item.correct){
+        btn.classList.add('correct');
+        starCount++;
+        updateStars();
+        speak('Correct! ' + opt);
+      } else {
+        btn.classList.add('wrong');
+        buttons.forEach(function(b){ if(b.textContent===item.correct) b.classList.add('correct'); });
+        speak('The answer is ' + item.correct);
+      }
+      setTimeout(function(){ quizIndex++; renderQuiz(); }, 1300);
+    });
+    box.appendChild(btn);
+  });
+}
+
+function updateStars(){
+  const total = quizItems.length;
+  let s = '';
+  for(let i=0;i<total;i++){ s += i < starCount ? '⭐' : '☆'; }
+  document.getElementById('stars').textContent = s;
+}
+
+updateStars();
+renderQuiz();
+
+/* ============ ÁRBOL FAMILIAR (integrado) ============ */
+
+/* ---- His/Her mini check ---- */
+const familyChecks = [
+  {before:'Robert is a boy.', blank:'___ name is Robert.', answer:'His'},
+  {before:'Alice is a girl.', blank:'___ name is Alice.', answer:'Her'},
+  {before:'Leo is a boy.', blank:'___ sister is Mia.', answer:'His'},
+  {before:'Sophie is a girl.', blank:'___ cousin is Leo.', answer:'Her'},
+];
+
+const checkListEl = document.getElementById('checkList');
+familyChecks.forEach(function(c){
+  const item = document.createElement('div');
+  item.className = 'check-item';
+
+  const sentence = document.createElement('div');
+  sentence.className = 'sentence';
+  sentence.textContent = c.before + ' ' + c.blank;
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'check-btns';
+
+  const feedback = document.createElement('div');
+  feedback.className = 'check-feedback';
+
+  ['His','Her'].forEach(function(option){
+    const btn = document.createElement('button');
+    btn.className = 'check-btn ' + (option === 'His' ? 'his-btn' : 'her-btn');
+    btn.type = 'button';
+    btn.textContent = option;
+    btn.addEventListener('click', function(){
+      const allBtns = btnRow.querySelectorAll('.check-btn');
+      allBtns.forEach(function(b){ b.disabled = true; });
+      if (option === c.answer){
+        btn.classList.add('correct');
+        feedback.textContent = '✅ ¡Correcto!';
+        feedback.style.color = 'var(--mint)';
+      } else {
+        btn.classList.add('wrong');
+        allBtns.forEach(function(b){ if (b.textContent === c.answer) b.classList.add('correct'); });
+        feedback.textContent = '❌ La respuesta correcta era "' + c.answer + '"';
+        feedback.style.color = 'var(--planet)';
+      }
+    });
+    btnRow.appendChild(btn);
+  });
+
+  item.appendChild(sentence);
+  item.appendChild(btnRow);
+  item.appendChild(feedback);
+  checkListEl.appendChild(item);
+});
+
+/* ---- Family data ---- */
+const family = [
+  {id:'grandma', en:'Grandma', name:'Alice', age:68, gender:'f', emoji:'👵', group:'grandparents'},
+  {id:'grandpa', en:'Grandpa', name:'Robert', age:71, gender:'m', emoji:'👴', group:'grandparents'},
+  {id:'mum', en:'Mum', name:'Laura', age:40, gender:'f', emoji:'👩', group:'parents'},
+  {id:'dad', en:'Dad', name:'Peter', age:42, gender:'m', emoji:'👨', group:'parents'},
+  {id:'aunt', en:'Aunt', name:'Emma', age:34, gender:'f', emoji:'👩\u200d🦱', group:'parents'},
+  {id:'uncle', en:'Uncle', name:'Mark', age:36, gender:'m', emoji:'👨\u200d🦱', group:'parents'},
+  {id:'sister', en:'Sister', name:'Mia', age:12, gender:'f', emoji:'👧', group:'kids'},
+  {id:'brother', en:'Brother', name:'Leo', age:7, gender:'m', emoji:'👦', group:'kids'},
+  {id:'cousin', en:'Cousin', name:'Sophie', age:10, gender:'f', emoji:'🧒', group:'kids'},
+];
+
+function subjPron(m){ return m.gender === 'f' ? 'she' : 'he'; }
+function possPron(m){ return m.gender === 'f' ? 'her' : 'his'; }
+function subjCap(m){ const s = subjPron(m); return s.charAt(0).toUpperCase() + s.slice(1); }
+function possCap(m){ const p = possPron(m); return p.charAt(0).toUpperCase() + p.slice(1); }
+
+function renderFamilyRow(containerId, groupName){
+  const container = document.getElementById(containerId);
+  family.filter(function(m){ return m.group === groupName; }).forEach(function(m){
+    const card = document.createElement('div');
+    card.className = 'member-card gender-' + m.gender;
+
+    const emoji = document.createElement('div');
+    emoji.className = 'emoji';
+    emoji.textContent = m.emoji;
+
+    const rel = document.createElement('div');
+    rel.className = 'rel';
+    rel.textContent = m.en;
+
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = m.name;
+
+    const age = document.createElement('div');
+    age.className = 'age';
+    age.textContent = m.age + ' years old';
+
+    const tag = document.createElement('span');
+    tag.className = 'pron-tag';
+    tag.textContent = possCap(m);
+
+    card.appendChild(emoji);
+    card.appendChild(rel);
+    card.appendChild(name);
+    card.appendChild(age);
+    card.appendChild(tag);
+
+    card.addEventListener('click', function(){ openFamilyDetail(m); });
+    container.appendChild(card);
+  });
+}
+renderFamilyRow('rowGrandparents', 'grandparents');
+renderFamilyRow('rowParents', 'parents');
+renderFamilyRow('rowKids', 'kids');
+
+function makeFamilyQaRow(question, answer){
+  const row = document.createElement('div');
+  row.className = 'qa-row2';
+
+  const qLine = document.createElement('div');
+  qLine.className = 'q';
+  const qSpan = document.createElement('span');
+  qSpan.textContent = '❓ ' + question;
+  const speakBtn = document.createElement('button');
+  speakBtn.className = 'mini-speak';
+  speakBtn.type = 'button';
+  speakBtn.textContent = '🔊';
+  speakBtn.addEventListener('click', function(){ speak(question); });
+  qLine.appendChild(qSpan);
+  qLine.appendChild(speakBtn);
+
+  const aLine = document.createElement('div');
+  aLine.className = 'a';
+  aLine.textContent = '✅ ' + answer;
+  aLine.title = 'Tocá para escuchar la respuesta';
+  aLine.addEventListener('click', function(){ speak(answer); });
+
+  row.appendChild(qLine);
+  row.appendChild(aLine);
+  return row;
+}
+
+function openFamilyDetail(m){
+  const panel = document.getElementById('detailPanel');
+  panel.innerHTML = '';
+  panel.classList.add('open');
+
+  const head = document.createElement('div');
+  head.className = 'detail-head';
+  const emoji = document.createElement('div');
+  emoji.className = 'emoji';
+  emoji.textContent = m.emoji;
+  const titleBox = document.createElement('div');
+  const h3 = document.createElement('h3');
+  h3.textContent = m.name + ' — ' + m.en;
+  const sub = document.createElement('div');
+  sub.className = 'sub';
+  sub.textContent = m.age + ' years old · ' + (m.gender === 'f' ? 'usa SHE / HER' : 'usa HE / HIS');
+  titleBox.appendChild(h3);
+  titleBox.appendChild(sub);
+  head.appendChild(emoji);
+  head.appendChild(titleBox);
+  panel.appendChild(head);
+
+  panel.appendChild(makeFamilyQaRow('Who is ' + subjPron(m) + '?', subjCap(m) + ' is my ' + m.en.toLowerCase() + '.'));
+  panel.appendChild(makeFamilyQaRow("What's " + possPron(m) + ' name?', possCap(m) + ' name is ' + m.name + '.'));
+  panel.appendChild(makeFamilyQaRow('How old is ' + subjPron(m) + '?', subjCap(m) + ' is ' + m.age + ' years old.'));
+  panel.appendChild(makeFamilyQaRow('Is ' + subjPron(m) + ' your ' + m.en.toLowerCase() + '?', 'Yes, ' + subjPron(m) + ' is.'));
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'close-detail';
+  closeBtn.type = 'button';
+  closeBtn.textContent = 'Cerrar';
+  closeBtn.addEventListener('click', function(){ panel.classList.remove('open'); });
+  panel.appendChild(closeBtn);
+
+  panel.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+/* ---- Family practice quiz (10 random rounds) ---- */
+const FAMILY_TOTAL_ROUNDS = 10;
+let familyRound = 0;
+let familyStarCount = 0;
+
+function pickRandomMember(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffleArr(arr){ return arr.slice().sort(function(){ return Math.random()-0.5; }); }
+
+function buildFamilyWho(m){
+  const distractors = family.filter(function(x){ return x.id !== m.id && x.gender === m.gender; }).map(function(x){ return x.en; });
+  const options = shuffleArr([m.en].concat(shuffleArr(distractors).slice(0,2)));
+  return { emoji:m.emoji, q:'Who is ' + subjPron(m) + '?', options:options, correct:m.en };
+}
+function buildFamilyWhat(m){
+  const distractors = family.filter(function(x){ return x.id !== m.id; }).map(function(x){ return x.name; });
+  const options = shuffleArr([m.name].concat(shuffleArr(distractors).slice(0,2)));
+  return { emoji:m.emoji, q:"What's " + possPron(m) + ' name?', options:options, correct:m.name };
+}
+function buildFamilyAge(m){
+  const nearby = [m.age-2, m.age-1, m.age+1, m.age+3].filter(function(n){ return n>0; });
+  const distractors = shuffleArr(nearby).slice(0,2).map(String);
+  const options = shuffleArr([String(m.age)].concat(distractors));
+  return { emoji:m.emoji, q:'How old is ' + subjPron(m) + '?', options:options, correct:String(m.age) };
+}
+function buildFamilyYesNo(m){
+  const isTrue = Math.random() < 0.5;
+  if (isTrue){
+    return { emoji:m.emoji, q:'Is ' + subjPron(m) + ' your ' + m.en.toLowerCase() + '?', correct:'Yes', fullAnswer:'Yes, ' + subjPron(m) + ' is.' };
+  }
+  const sameGenderOthers = family.filter(function(x){ return x.id !== m.id && x.gender === m.gender; });
+  const wrongRel = pickRandomMember(sameGenderOthers.length ? sameGenderOthers : family.filter(function(x){ return x.id !== m.id; }));
+  return {
+    emoji:m.emoji,
+    q:'Is ' + subjPron(m) + ' your ' + wrongRel.en.toLowerCase() + '?',
+    correct:'No',
+    fullAnswer:"No, " + subjPron(m) + " isn't. " + subjCap(m) + ' is my ' + m.en.toLowerCase() + '.'
+  };
+}
+
+function nextFamilyQuestion(){
+  const m = pickRandomMember(family);
+  const type = pickRandomMember(['who','what','age','yesno']);
+  if (type === 'who') return { kind:'choice', data:buildFamilyWho(m) };
+  if (type === 'what') return { kind:'choice', data:buildFamilyWhat(m) };
+  if (type === 'age') return { kind:'choice', data:buildFamilyAge(m) };
+  return { kind:'yesno', data:buildFamilyYesNo(m) };
+}
+
+function renderFamilyQuiz(){
+  const stage = document.getElementById('familyQuizStage');
+  const feedback = document.getElementById('familyQuizFeedback');
+  stage.innerHTML = '';
+  feedback.textContent = '';
+
+  if (familyRound >= FAMILY_TOTAL_ROUNDS){
+    const title = document.createElement('div');
+    title.style.fontFamily = "'Baloo 2'";
+    title.style.fontSize = '22px';
+    title.style.color = 'var(--star)';
+    title.textContent = '🎉 ¡Muy bien! Terminaste la práctica.';
+
+    const text = document.createElement('p');
+    text.style.color = 'var(--paper)';
+    text.textContent = 'Conseguiste ' + familyStarCount + ' de ' + FAMILY_TOTAL_ROUNDS + ' estrellas.';
+
+    const again = document.createElement('button');
+    again.className = 'pill-btn';
+    again.type = 'button';
+    again.textContent = '🔁 Jugar de nuevo';
+    again.addEventListener('click', function(){ familyRound = 0; familyStarCount = 0; updateFamilyStars(); renderFamilyQuiz(); });
+
+    stage.appendChild(title);
+    stage.appendChild(text);
+    stage.appendChild(again);
+    return;
+  }
+
+  const q = nextFamilyQuestion();
+
+  const emojiDiv = document.createElement('div');
+  emojiDiv.style.fontSize = '48px';
+  emojiDiv.style.marginBottom = '6px';
+  emojiDiv.textContent = q.data.emoji;
+
+  const qDiv = document.createElement('div');
+  qDiv.style.fontSize = '19px';
+  qDiv.style.fontFamily = "'Baloo 2'";
+  qDiv.style.color = 'var(--star)';
+  qDiv.style.marginBottom = '10px';
+  qDiv.textContent = q.data.q;
+
+  const speakBtn = document.createElement('button');
+  speakBtn.className = 'pill-btn';
+  speakBtn.type = 'button';
+  speakBtn.style.marginBottom = '10px';
+  speakBtn.textContent = '🔊 Escuchar la pregunta';
+  speakBtn.addEventListener('click', function(){ speak(q.data.q); });
+
+  stage.appendChild(emojiDiv);
+  stage.appendChild(qDiv);
+  stage.appendChild(speakBtn);
+
+  if (q.kind === 'choice'){
+    const box = document.createElement('div');
+    box.style.marginTop = '10px';
+    q.data.options.forEach(function(opt){
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.type = 'button';
+      btn.textContent = opt;
+      btn.addEventListener('click', function(){
+        const buttons = box.querySelectorAll('.opt-btn');
+        buttons.forEach(function(b){ b.disabled = true; });
+        if (opt === q.data.correct){
+          btn.classList.add('correct');
+          familyStarCount++;
+          updateFamilyStars();
+          feedback.textContent = '✅ ¡Correcto!';
+          speak('Correct! ' + opt);
+        } else {
+          btn.classList.add('wrong');
+          buttons.forEach(function(b){ if (b.textContent === q.data.correct) b.classList.add('correct'); });
+          feedback.textContent = '❌ La respuesta era: ' + q.data.correct;
+          speak('The answer is ' + q.data.correct);
+        }
+        setTimeout(function(){ familyRound++; renderFamilyQuiz(); }, 1400);
+      });
+      box.appendChild(btn);
+    });
+    stage.appendChild(box);
+  } else {
+    const row = document.createElement('div');
+    row.className = 'yesno-row';
+    ['Yes','No'].forEach(function(opt){
+      const btn = document.createElement('button');
+      btn.className = 'yesno-btn';
+      btn.type = 'button';
+      btn.textContent = opt;
+      btn.addEventListener('click', function(){
+        const buttons = row.querySelectorAll('.yesno-btn');
+        buttons.forEach(function(b){ b.disabled = true; });
+        if (opt === q.data.correct){
+          btn.classList.add('correct');
+          familyStarCount++;
+          updateFamilyStars();
+        } else {
+          btn.classList.add('wrong');
+          buttons.forEach(function(b){ if (b.textContent === q.data.correct) b.classList.add('correct'); });
+        }
+        feedback.textContent = q.data.fullAnswer;
+        speak(q.data.fullAnswer);
+        setTimeout(function(){ familyRound++; renderFamilyQuiz(); }, 1800);
+      });
+      row.appendChild(btn);
+    });
+    stage.appendChild(row);
+  }
+}
+
+function updateFamilyStars(){
+  document.getElementById('familyStars').textContent =
+    '⭐'.repeat(familyStarCount) + '☆'.repeat(Math.max(0, FAMILY_TOTAL_ROUNDS - familyStarCount));
+}
+
+updateFamilyStars();
+renderFamilyQuiz();
+</script>
+</body>
+</html>
