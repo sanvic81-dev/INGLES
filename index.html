@@ -527,8 +527,8 @@ function pickVoice(){
   const britishFemale = britishVoices.find(v => femaleNameHints.some(hint => v.name.toLowerCase().includes(hint)));
   const anyFemale = englishVoices.find(v => femaleNameHints.some(hint => v.name.toLowerCase().includes(hint)));
   englishVoice = britishFemale
-    || britishVoices[0]
     || anyFemale
+    || britishVoices[0]
     || englishVoices.find(v => v.lang === 'en-US')
     || englishVoices[0]
     || null;
