@@ -245,8 +245,26 @@ function playPCM(buf){
     const s=c.createBufferSource();s.buffer=ab;s.connect(c.destination);s.onended=()=>res();s.start();curSrc=s;
   });
 }
+/* pre-generated files in ./audio (made with tools/generar_audios.py) */
+const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const missing=new Set();let fileAudio=null;
+function playFile(text){
+  return new Promise((resolve,reject)=>{
+    const s=slug(text);if(missing.has(s))return reject();
+    const exts=["mp3","wav"];
+    const tryNext=()=>{
+      const ext=exts.shift();if(!ext){missing.add(s);return reject()}
+      const a=new Audio(`audio/${s}.${ext}`);a.preservesPitch=true;a.playbackRate=cfg.slow?.8:1;
+      a.onerror=tryNext;a.onended=()=>resolve();
+      a.play().then(()=>{try{fileAudio&&fileAudio.pause()}catch(e){}fileAudio=a}).catch(tryNext);
+    };
+    tryNext();
+  });
+}
 let geminiWarned=false;
 async function speak(text){
+  try{speechSynthesis.cancel()}catch(e){}
+  try{await playFile(text);return}catch(e){}
   if(cfg.mode==="gemini"&&cfg.gkey){
     try{const pcm=await geminiPCM(text,cfg.slow);return await playPCM(pcm)}
     catch(e){
