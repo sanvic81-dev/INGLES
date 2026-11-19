@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Quest: Numbers & Red Riding Hood</title>
+<style>
+  :root{
+    --bg:#FFF6E5; --card:#FFFFFF; --ink:#2B2A4C; --dim:#6B6A8C;
+    --red:#E5484D; --red-d:#B5282D; --green:#2FB36D; --green-bg:#D9F7E6;
+    --blue:#3D8BFD; --yellow:#FFC93C; --purple:#7C5CFF; --bad-bg:#FFE1E1;
+    --shadow:0 6px 0 rgba(43,42,76,.12);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{font-family:ui-rounded,"Nunito","Baloo 2","Trebuchet MS","Comic Sans MS",system-ui,sans-serif;min-height:100vh}
+  button{font:inherit;color:inherit;cursor:pointer;border:0}
+  .wrap{max-width:900px;margin:0 auto;padding:16px}
+  header{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:12px}
+  header h1{font-size:clamp(20px,5vw,30px);margin:0;cursor:pointer}
+  .pill{background:var(--card);border-radius:999px;padding:8px 14px;box-shadow:var(--shadow);font-weight:800;display:flex;gap:8px;align-items:center}
+  .icon-btn{background:var(--card);border-radius:999px;width:44px;height:44px;box-shadow:var(--shadow);font-size:20px}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .gcards{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+  .big{background:var(--card);border-radius:24px;padding:22px;box-shadow:var(--shadow);text-align:left;width:100%}
+  .big .emo{font-size:48px}
+  .big h2{margin:6px 0 2px;font-size:24px}
+  .big p{margin:0;color:var(--dim)}
+  .big.red{border-bottom:8px solid var(--red)} .big.blue{border-bottom:8px solid var(--blue)}
+  h2.sec{margin:22px 0 10px;font-size:20px}
+  .btn{background:var(--purple);color:#fff;border-radius:16px;padding:12px 18px;font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .btn.alt{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+  .btn.green{background:var(--green)} .btn.red{background:var(--red)}
+  .btn[disabled]{opacity:.5}
+  .mode{background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--shadow);text-align:left;display:flex;gap:12px;align-items:center}
+  .mode .emo{font-size:30px}
+  .mode b{display:block} .mode small{color:var(--dim)}
+  .back{margin-bottom:10px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+  .tab{background:var(--card);border-radius:999px;padding:8px 14px;font-weight:800;box-shadow:var(--shadow)}
+  .tab.on{background:var(--ink);color:#fff}
+  .num{background:var(--card);border-radius:18px;padding:12px 6px;box-shadow:var(--shadow);text-align:center}
+  .num .d{font-size:34px;font-weight:900;color:var(--purple)}
+  .num .w{font-size:14px;font-weight:800;line-height:1.1;min-height:32px;display:flex;align-items:center;justify-content:center}
+  .num.story .d{font-size:52px;color:inherit}
+  .num .es{font-size:12px;color:var(--dim)}
+  .num.playing{outline:4px solid var(--yellow)}
+  .tip{background:#FFF0B8;border-radius:18px;padding:14px;font-size:15px}
+  .pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}
+  .pair{display:flex;gap:6px}
+  .pair button{flex:1;background:#fff;border-radius:12px;padding:8px 4px;font-weight:800;box-shadow:var(--shadow);line-height:1.1}
+  .pair small{display:block;color:var(--dim);font-weight:700}
+  /* quiz */
+  .qbar{height:12px;background:#fff;border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.08)}
+  .qbar i{display:block;height:100%;background:var(--green);transition:width .3s}
+  .qcard{background:var(--card);border-radius:28px;padding:22px;margin-top:14px;box-shadow:var(--shadow);text-align:center}
+  .prompt{font-size:16px;color:var(--dim);font-weight:800}
+  .bigshow{font-size:clamp(70px,22vw,120px);font-weight:900;line-height:1.1;color:var(--purple);margin:8px 0}
+  .bigshow.emoji{color:inherit}
+  .spk{font-size:60px;background:var(--yellow);width:110px;height:110px;border-radius:50%;box-shadow:var(--shadow);margin:10px auto;display:block}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .opt{background:#F3EFFF;border-radius:18px;padding:14px 8px;font-size:clamp(20px,5vw,28px);font-weight:900;box-shadow:var(--shadow);min-height:64px}
+  .opt.emojiopt{font-size:56px}
+  .opt.ok{background:var(--green-bg);outline:4px solid var(--green)}
+  .opt.bad{background:var(--bad-bg);outline:4px solid var(--red)}
+  .inp{width:100%;font:inherit;font-size:28px;text-align:center;padding:12px;border-radius:16px;border:3px solid #D9D3F5;margin-top:10px;font-weight:800;text-transform:lowercase}
+  .inp:focus{outline:none;border-color:var(--purple)}
+  .inp.ok{border-color:var(--green);background:var(--green-bg)} .inp.bad{border-color:var(--red);background:var(--bad-bg)}
+  .slots{letter-spacing:6px;font-size:24px;font-weight:900;color:var(--dim);margin-top:8px;min-height:30px}
+  .msg{min-height:34px;font-size:20px;font-weight:900;margin-top:12px}
+  .msg.ok{color:var(--green)} .msg.bad{color:var(--red)}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .mic{font-size:54px;background:var(--red);width:110px;height:110px;border-radius:50%;box-shadow:var(--shadow);color:#fff;margin:10px auto;display:block}
+  .mic.rec{animation:pulse 1s infinite}
+  @keyframes pulse{50%{transform:scale(1.1);box-shadow:0 0 0 14px rgba(229,72,77,.25)}}
+  .shake{animation:shake .35s}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .result{text-align:center}
+  .result .stars{font-size:44px;margin:10px 0}
+  /* settings */
+  dialog{border:0;border-radius:24px;padding:20px;max-width:520px;width:calc(100% - 24px);color:var(--ink);background:#fff}
+  dialog::backdrop{background:rgba(0,0,0,.45)}
+  label{display:block;font-weight:800;margin:12px 0 4px}
+  select,input[type=password],input[type=text]{width:100%;font:inherit;padding:10px;border-radius:12px;border:2px solid #D9D3F5}
+  .small{font-size:13px;color:var(--dim)}
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:99px;font-weight:800;z-index:9;max-width:90%}
+  .conf{position:fixed;top:-20px;font-size:26px;pointer-events:none;animation:fall 1.6s linear forwards;z-index:10}
+  @keyframes fall{to{transform:translateY(105vh) rotate(360deg);opacity:.8}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="logo">🧒 English Quest</h1>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="pill">⭐ <span id="starCount">0</span></div>
+      <button class="icon-btn" id="btnSet" title="Voz / Ajustes" aria-label="Ajustes de voz">⚙️</button>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<dialog id="dlg">
+  <h2 style="margin-top:0">⚙️ Voz y ajustes</h2>
+  <label for="vmode">Tipo de voz</label>
+  <select id="vmode">
+    <option value="browser">Voz del dispositivo (gratis, funciona sin internet)</option>
+    <option value="gemini">Voz natural de Google Gemini (necesita tu API key de AI Studio)</option>
+  </select>
+  <div id="boxBrowser">
+    <label for="vsel">Voz en inglés del dispositivo</label>
+    <select id="vsel"></select>
+  </div>
+  <div id="boxGemini" hidden>
+    <label for="gkey">API key de Google AI Studio</label>
+    <input type="password" id="gkey" placeholder="AIza..." autocomplete="off">
+    <label for="gvoice">Voz</label>
+    <select id="gvoice">
+      <option>Leda</option><option>Kore</option><option>Zephyr</option><option>Puck</option>
+      <option>Aoede</option><option>Achird</option><option>Sulafat</option><option>Callirrhoe</option>
+    </select>
+    <p class="small">Consigue la key gratis en aistudio.google.com → "Get API key". Se guarda solo en este dispositivo. Cada audio se genera una vez y queda guardado, así que después no vuelve a gastar ni necesita internet.</p>
+    <div class="row" style="justify-content:flex-start">
+      <button class="btn alt" id="btnTest">🔊 Probar voz</button>
+      <button class="btn alt" id="btnPre">⬇️ Pre-generar todos los audios</button>
+    </div>
+    <div class="small" id="preInfo"></div>
+  </div>
+  <label><input type="checkbox" id="slow"> Hablar más despacio</label>
+  <div class="row" style="justify-content:flex-end"><button class="btn" id="btnClose">Listo</button></div>
+</dialog>
+
+<script>
+"use strict";
+/* ================= DATA ================= */
+const ONES=["","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const TENS=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+function numWord(n){
+  if(n===100) return "one hundred";
+  if(n<20) return ONES[n];
+  const t=Math.floor(n/10),o=n%10;
+  return TENS[t]+(o?"-"+ONES[o]:"");
+}
+const NUMS=[]; for(let n=11;n<=100;n++){const w=numWord(n);NUMS.push({id:"n"+n,kind:"num",n,vis:String(n),word:w,say:w.replace("-"," "),accept:[w.replace(/[^a-z]/g,"")],digits:String(n)});}
+const STORY=[
+ {w:"Little Red Riding Hood",e:"👧",es:"Caperucita Roja",a:["littleredridinghood","redridinghood"]},
+ {w:"wolf",e:"🐺",es:"lobo"},
+ {w:"wood",e:"🌲",es:"bosque",a:["wood","forest","woods"],show:"wood / forest"},
+ {w:"Grandma",e:"👵",es:"abuela",a:["grandma","grandmother"]},
+ {w:"mother",e:"👩",es:"mamá",a:["mother","mom","mum"]},
+ {w:"woodcutter",e:"🪓",es:"leñador"},
+ {w:"flowers",e:"🌸",es:"flores"},
+ {w:"house",e:"🏠",es:"casa"},
+ {w:"basket",e:"🧺",es:"canasta"},
+ {w:"milk",e:"🥛",es:"leche"},
+ {w:"bread",e:"🍞",es:"pan"},
+ {w:"butter",e:"🧈",es:"manteca"},
+ {w:"eyes",e:"👀",es:"ojos"},
+ {w:"ears",e:"👂",es:"orejas"},
+ {w:"nose",e:"👃",es:"nariz"},
+ {w:"mouth",e:"👄",es:"boca"},
+ {w:"teeth",e:"🦷",es:"dientes"},
+].map((x,i)=>({id:"s"+i,kind:"story",vis:x.e,word:x.show||x.w,say:x.w,es:x.es,accept:x.a||[x.w.toLowerCase().replace(/[^a-z]/g,"")]}));
+const RANGES={
+  teens:{label:"11 al 19",f:n=>n<=19},
+  tens:{label:"20, 30, 40… 100",f:n=>n%10===0&&n>=20},
+  mix1:{label:"21 al 59",f:n=>n>=21&&n<=59},
+  mix2:{label:"60 al 100",f:n=>n>=60},
+  all:{label:"Todos (11–100)",f:()=>true},
+};
+
+/* ================= STORAGE ================= */
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let stats=store.get("eq_stats",{}); let stars=store.get("eq_stars",0);
+let cfg=Object.assign({mode:"browser",voiceURI:"",gkey:"",gvoice:"Leda",slow:false},store.get("eq_cfg",{}));
+const saveCfg=()=>store.set("eq_cfg",cfg);
+function setStars(n){stars=n;store.set("eq_stars",n);document.getElementById("starCount").textContent=n}
+setStars(stars);
+
+/* ================= AUDIO ================= */
+let actx=null;
+function ctx(){if(!actx){const C=window.AudioContext||window.webkitAudioContext;if(C)actx=new C();}if(actx&&actx.state==="suspended")actx.resume();return actx}
+function beep(freqs,dur=.12){const c=ctx();if(!c)return;let t=c.currentTime;freqs.forEach(f=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.type="triangle";g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur);t+=dur*.9})}
+const sfxOk=()=>beep([660,880,1100]), sfxBad=()=>beep([220,180],.18);
+
+/* browser voices */
+let voices=[];
+function loadVoices(){
+  if(!("speechSynthesis" in window))return;
+  voices=speechSynthesis.getVoices().filter(v=>/^en[-_]/i.test(v.lang));
+  const score=v=>{let s=0;const n=v.name;if(/en[-_]US/i.test(v.lang))s+=3;if(/natural|neural|online/i.test(n))s+=6;if(/Google US English|Samantha|Aria|Jenny|Ava|Allison|Zira|Karen|Siri/i.test(n))s+=4;if(v.localService===false)s+=1;return s};
+  voices.sort((a,b)=>score(b)-score(a));
+  const sel=document.getElementById("vsel");
+  sel.innerHTML=voices.map(v=>`<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`).join("")||"<option>No hay voces en inglés</option>";
+  const cur=voices.find(v=>v.voiceURI===cfg.voiceURI)||voices[0];
+  if(cur)sel.value=cur.voiceURI;
+}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function speakBrowser(text){
+  return new Promise(res=>{
+    if(!("speechSynthesis" in window))return res();
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang="en-US";
+    const v=voices.find(v=>v.voiceURI===cfg.voiceURI)||voices[0];if(v){u.voice=v;u.lang=v.lang}
+    u.rate=cfg.slow?.65:.9;u.pitch=1.05;u.onend=u.onerror=()=>res();
+    speechSynthesis.speak(u);
+  });
+}
+/* Gemini TTS with IndexedDB cache */
+let idb=null;
+function openDB(){return new Promise(r=>{try{const q=indexedDB.open("eq_audio",1);q.onupgradeneeded=()=>q.result.createObjectStore("a");q.onsuccess=()=>{idb=q.result;r()};q.onerror=()=>r()}catch(e){r()}})}
+const dbReady=openDB();
+function dbGet(k){return new Promise(r=>{if(!idb)return r(null);try{const q=idb.transaction("a").objectStore("a").get(k);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}})}
+function dbPut(k,v){return new Promise(r=>{if(!idb)return r();try{const t=idb.transaction("a","readwrite");t.objectStore("a").put(v,k);t.oncomplete=()=>r();t.onerror=()=>r()}catch(e){r()}})}
+const b64ToBytes=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+async function geminiPCM(text,slow){
+  const key=`${cfg.gvoice}|${slow?"s":"n"}|${text}`;
+  await dbReady;
+  let pcm=await dbGet(key);
+  if(pcm)return pcm;
+  const style=slow?"Say slowly, clearly and warmly, like a kind English teacher talking to a 9 year old child: ":"Say clearly and cheerfully, like a kind English teacher talking to a 9 year old child: ";
+  const body={contents:[{parts:[{text:style+text}]}],generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:cfg.gvoice}}}}};
+  const url="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent";
+  const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":cfg.gkey},body:JSON.stringify(body)});
+  if(!r.ok){const e=new Error("HTTP "+r.status);e.status=r.status;throw e}
+  const j=await r.json();
+  const d=j.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+  if(!d)throw new Error("Sin audio");
+  pcm=b64ToBytes(d).buffer;
+  await dbPut(key,pcm);
+  return pcm;
+}
+let curSrc=null;
+function playPCM(buf){
+  return new Promise(res=>{
+    const c=ctx();if(!c)return res();
+    const i16=new Int16Array(buf);const f=new Float32Array(i16.length);for(let i=0;i<i16.length;i++)f[i]=i16[i]/32768;
+    const ab=c.createBuffer(1,f.length,24000);ab.copyToChannel(f,0);
+    try{curSrc&&curSrc.stop()}catch(e){}
+    const s=c.createBufferSource();s.buffer=ab;s.connect(c.destination);s.onended=()=>res();s.start();curSrc=s;
+  });
+}
+let geminiWarned=false;
+async function speak(text){
+  if(cfg.mode==="gemini"&&cfg.gkey){
+    try{const pcm=await geminiPCM(text,cfg.slow);return await playPCM(pcm)}
+    catch(e){
+      if(!geminiWarned){geminiWarned=true;toast("No pude usar Gemini ("+e.message+"). Uso la voz del dispositivo.")}
+    }
+  }
+  return speakBrowser(text);
+}
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}
+function confetti(){const em=["🎉","⭐","✨","🌟","🎈"];for(let i=0;i<14;i++){const s=document.createElement("span");s.className="conf";s.textContent=em[i%em.length];s.style.left=Math.random()*100+"vw";s.style.animationDelay=Math.random()*.4+"s";document.body.appendChild(s);setTimeout(()=>s.remove(),2400)}}
+
+/* ================= SETTINGS UI ================= */
+const dlg=document.getElementById("dlg");
+function syncDlg(){
+  document.getElementById("vmode").value=cfg.mode;
+  document.getElementById("gkey").value=cfg.gkey;
+  document.getElementById("gvoice").value=cfg.gvoice;
+  document.getElementById("slow").checked=cfg.slow;
+  document.getElementById("boxGemini").hidden=cfg.mode!=="gemini";
+  document.getElementById("boxBrowser").hidden=cfg.mode==="gemini";
+}
+document.getElementById("btnSet").onclick=()=>{syncDlg();dlg.showModal()};
+document.getElementById("btnClose").onclick=()=>dlg.close();
+document.getElementById("vmode").onchange=e=>{cfg.mode=e.target.value;saveCfg();syncDlg()};
+document.getElementById("vsel").onchange=e=>{cfg.voiceURI=e.target.value;saveCfg()};
+document.getElementById("gkey").onchange=e=>{cfg.gkey=e.target.value.trim();saveCfg();geminiWarned=false};
+document.getElementById("gvoice").onchange=e=>{cfg.gvoice=e.target.value;saveCfg()};
+document.getElementById("slow").onchange=e=>{cfg.slow=e.target.checked;saveCfg()};
+document.getElementById("btnTest").onclick=()=>{cfg.gkey=document.getElementById("gkey").value.trim();saveCfg();geminiWarned=false;speak("Hello! Let's practice thirty-five and the big bad wolf.")};
+document.getElementById("btnPre").onclick=async()=>{
+  cfg.gkey=document.getElementById("gkey").value.trim();saveCfg();
+  if(!cfg.gkey){toast("Primero pegá tu API key");return}
+  const info=document.getElementById("preInfo");const btn=document.getElementById("btnPre");btn.disabled=true;
+  const all=[...NUMS,...STORY].map(x=>x.say);const uniq=[...new Set(all)];
+  let done=0,fail=0;
+  for(const t of uniq){
+    info.textContent=`Generando ${done+fail+1}/${uniq.length}…`;
+    let tries=0;
+    while(true){
+      try{await geminiPCM(t,cfg.slow);done++;break}
+      catch(e){
+        if(e.status===429&&tries<4){tries++;info.textContent=`Límite de Google alcanzado, espero 20 s… (${done}/${uniq.length})`;await new Promise(r=>setTimeout(r,20000));continue}
+        fail++;break;
+      }
+    }
+    await new Promise(r=>setTimeout(r,800));
+    if(fail>=3){info.textContent="Demasiados errores. Revisá la API key.";btn.disabled=false;return}
+  }
+  info.textContent=`Listo: ${done} audios guardados${fail?`, ${fail} fallaron`:""}.`;btn.disabled=false;
+};
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,"");
+function weightedPick(pool,count){
+  const out=[];let p=pool.slice();
+  while(out.length<count&&p.length){
+    const ws=p.map(x=>{const s=stats[x.id]||{ok:0,bad:0};return 1+Math.max(0,s.bad-s.ok)*2});
+    let r=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
+    for(;i<ws.length;i++){r-=ws[i];if(r<=0)break}
+    out.push(p.splice(Math.min(i,p.length-1),1)[0]);
+  }
+  return out;
+}
+function record(item,ok){const s=stats[item.id]||(stats[item.id]={ok:0,bad:0});ok?s.ok++:s.bad++;store.set("eq_stats",stats)}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+/* ================= SCREENS ================= */
+function home(){
+  app.innerHTML=`
+  <p style="font-size:18px;margin:4px 0 14px">¡Hola, campeón! ¿Qué practicamos hoy? 🎧</p>
+  <div class="grid g2">
+    <button class="big blue" data-go="num"><div class="emo">🔢</div><h2>Numbers 11–100</h2><p>Escuchar, leer, escribir y decir</p></button>
+    <button class="big red" data-go="story"><div class="emo">🐺</div><h2>Little Red Riding Hood</h2><p>17 palabras del cuento</p></button>
+  </div>
+  <p class="small" style="margin-top:18px">💡 Si el sonido no se escucha, subí el volumen y tocá ⚙️ para elegir otra voz.</p>`;
+  app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>topic(b.dataset.go));
+}
+$("#logo").onclick=home;
+
+let T=null; // current topic: 'num'|'story'
+let range="all";
+function topic(t){
+  T=t;
+  const isNum=t==="num";
+  app.innerHTML=`
+  <button class="btn alt back" id="bk">← Inicio</button>
+  <h2 style="margin:0 0 6px">${isNum?"🔢 Numbers 11–100":"🐺 Little Red Riding Hood"}</h2>
+  <h2 class="sec">📖 Aprender</h2>
+  <button class="mode" id="mLearn" style="width:100%"><span class="emo">${isNum?"🗂️":"🃏"}</span><span><b>${isNum?"Tabla de números":"Tarjetas de palabras"}</b><small>Tocá cada una para escucharla</small></span></button>
+  ${isNum?`<h2 class="sec">¿Qué números practicar?</h2><div class="tabs" id="rtabs">${Object.entries(RANGES).map(([k,v])=>`<button class="tab ${k===range?"on":""}" data-r="${k}">${v.label}</button>`).join("")}</div>`:""}
+  <h2 class="sec">🎮 Juegos (10 preguntas)</h2>
+  <div class="grid g2">
+    <button class="mode" data-m="listen"><span class="emo">👂</span><span><b>Escucha y elige</b><small>Oís ${isNum?"el número":"la palabra"} y tocás la respuesta</small></span></button>
+    <button class="mode" data-m="read"><span class="emo">👀</span><span><b>Mira y elige</b><small>Ves ${isNum?"el número":"el dibujo"} y elegís cómo se dice</small></span></button>
+    <button class="mode" data-m="write"><span class="emo">✏️</span><span><b>Escribe</b><small>Escribí la palabra en inglés</small></span></button>
+    <button class="mode" data-m="say"><span class="emo">🎤</span><span><b>Habla</b><small>Decilo en voz alta${SR?"":" (autoevaluación)"}</small></span></button>
+  </div>
+  <button class="mode" data-m="mix" style="width:100%;margin-top:12px"><span class="emo">🏆</span><span><b>Desafío mixto</b><small>Un poco de todo</small></span></button>`;
+  $("#bk").onclick=home;
+  $("#mLearn").onclick=()=>learn();
+  app.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{range=b.dataset.r;topic("num")});
+  app.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>startQuiz(b.dataset.m));
+}
+
+/* ---- learn ---- */
+function learn(){
+  const isNum=T==="num";
+  let tab=isNum?"teens":null;
+  const draw=()=>{
+    let list,extra="";
+    if(isNum){
+      const f=tab==="teens"?(n=>n<=19):tab==="tens"?(n=>n%10===0):tab==="all"?(()=>true):(n=>n>=20&&n<=59);
+      list=NUMS.filter(x=>f(x.n));
+      if(tab==="teens"||tab==="tens"||tab==="all"){
+        extra=`<div class="tip"><b>¡Ojo con -teen y -ty!</b> Suenan parecido pero el acento cambia:<br>
+        <b>thir<u>TEEN</u></b> (13, acento al final) ≠ <b><u>THIR</u>ty</b> (30, acento al principio).
+        <div class="pairs">${[3,4,5,6,7,8,9].map(d=>`<div class="pair"><button data-say="${numWord(10+d)}">${10+d}<small>${ONES[10+d]}</small></button><button data-say="${numWord(d*10)}">${d*10}<small>${TENS[d]}</small></button></div>`).join("")}</div></div>`;
+      }
+    } else list=STORY;
+    app.innerHTML=`
+    <button class="btn alt back" id="bk">← Volver</button>
+    ${isNum?`<div class="tabs">${[["teens","11–19"],["tens","20, 30…100"],["mid","20–59"],["all","Todos"]].map(([k,l])=>`<button class="tab ${k===tab?"on":""}" data-t="${k}">${l}</button>`).join("")}</div>`:`<h2 style="margin:0 0 10px">Tocá una tarjeta 👆</h2>`}
+    ${extra}
+    <div class="grid gcards" style="margin-top:14px">${list.map(x=>`<button class="num ${x.kind}" data-say="${x.say}"><div class="d">${x.vis}</div><div class="w">${x.word}</div>${x.es?`<div class="es">${x.es}</div>`:""}</button>`).join("")}</div>`;
+    $("#bk").onclick=()=>topic(T);
+    app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=b.dataset.t;draw()});
+    app.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>{b.classList.add("playing");speak(b.dataset.say).then(()=>b.classList.remove("playing"))});
+  };
+  draw();
+}
+
+/* ---- quiz engine ---- */
+let Q=null;
+function poolFor(){
+  if(T==="num")return NUMS.filter(x=>RANGES[range].f(x.n));
+  return STORY;
+}
+function startQuiz(mode){
+  const pool=poolFor();
+  const items=weightedPick(pool,Math.min(10,pool.length));
+  const modes=["listen","read","write","say"];
+  Q={mode,items,i:0,score:0,qs:items.map((it,i)=>({it,kind:mode==="mix"?modes[i%4]:mode}))};
+  if(mode==="mix")Q.qs=shuffle(Q.qs);
+  nextQ();
+}
+function distractors(it,k=3){
+  const pool=poolFor().length>=4?poolFor():(T==="num"?NUMS:STORY);
+  let near=[];
+  if(it.kind==="num"){
+    const n=it.n;const cands=new Set();
+    [n+1,n-1,n+10,n-10,(n%10)*10+Math.floor(n/10),n<20?n*10-90:n>20&&n%10===0?n/10+10:n+2].forEach(c=>{if(c>=11&&c<=100&&c!==n)cands.add(c)});
+    near=shuffle([...cands]).map(c=>NUMS[c-11]).filter(x=>pool.includes(x)||pool.length<10);
+  }
+  const rest=shuffle(pool.filter(x=>x.id!==it.id&&!near.includes(x)));
+  return [...near,...rest].slice(0,k);
+}
+function nextQ(){
+  if(Q.i>=Q.qs.length)return finish();
+  const {it,kind}=Q.qs[Q.i];
+  const pct=Math.round(Q.i/Q.qs.length*100);
+  const num=it.kind==="num";
+  let body="";
+  if(kind==="listen"){
+    const opts=shuffle([it,...distractors(it)]);
+    body=`<div class="prompt">¿Qué ${num?"número":"palabra"} escuchás?</div>
+      <button class="spk" id="spk" aria-label="Escuchar">🔊</button>
+      <div class="opts">${opts.map(o=>`<button class="opt ${num?"":"emojiopt"}" data-id="${o.id}">${o.vis}</button>`).join("")}</div>`;
+  } else if(kind==="read"){
+    const opts=shuffle([it,...distractors(it)]);
+    body=`<div class="prompt">¿Cómo se dice en inglés?</div>
+      <div class="bigshow ${num?"":"emoji"}">${it.vis}</div>
+      <div class="opts">${opts.map(o=>`<button class="opt" style="font-size:clamp(17px,4.4vw,24px)" data-id="${o.id}">${o.word}</button>`).join("")}</div>`;
+  } else if(kind==="write"){
+    const letters=it.word.replace(/[^A-Za-z ]/g,"x");
+    body=`<div class="prompt">Escribí en inglés ${num?"el número":"la palabra"}</div>
+      <div class="bigshow ${num?"":"emoji"}">${it.vis}</div>
+      ${it.es?`<div class="small">(${it.es})</div>`:""}
+      <button class="btn alt" id="spk2" style="margin-top:6px">🔊 Escuchar</button>
+      <input class="inp" id="inp" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="...">
+      <div class="slots" id="slots">${it.word.split("").map(c=>c===" "?"&nbsp;&nbsp;":(c==="-"?"-":(c==="/"?"/":"_"))).join(" ")}</div>
+      <div class="row"><button class="btn green" id="chk">Comprobar ✔️</button></div>`;
+  } else { // say
+    body=`<div class="prompt">¡Decilo en inglés!</div>
+      <div class="bigshow ${num?"":"emoji"}">${it.vis}</div>
+      ${it.es?`<div class="small">(${it.es})</div>`:""}
+      <div class="row"><button class="btn alt" id="hint">👁️ Ver cómo se escribe</button><button class="btn alt" id="spk2">🔊 Escuchar modelo</button></div>
+      <div class="small" id="hintTxt" style="font-size:22px;font-weight:900;margin-top:8px;min-height:28px"></div>
+      ${SR?`<button class="mic" id="mic" aria-label="Hablar">🎤</button><div class="small">Tocá el micrófono y decilo</div>`
+          :`<div class="small" style="margin-top:10px">Tu navegador no tiene micrófono para reconocer voz. Decilo en voz alta y comparalo:</div><div class="row"><button class="btn green" id="selfOk">¡Lo dije bien! ✅</button><button class="btn red" id="selfBad">Quiero practicar más 🔁</button></div>`}`;
+  }
+  app.innerHTML=`<button class="btn alt back" id="bk">✖ Salir</button>
+    <div class="qbar"><i style="width:${pct}%"></i></div>
+    <div class="small" style="margin-top:6px">Pregunta ${Q.i+1} de ${Q.qs.length} · ⭐ ${Q.score}</div>
+    <div class="qcard" id="qcard">${body}<div class="msg" id="msg"></div><div class="row" id="nextRow"></div></div>`;
+  $("#bk").onclick=()=>topic(T);
+  Q.tries=0;Q.done=false;
+  wire(kind,it);
+}
+function answer(ok,it,reveal){
+  if(Q.done)return;Q.done=true;
+  record(it,ok);
+  const msg=$("#msg");
+  if(ok){Q.score++;sfxOk();msg.className="msg ok";msg.textContent=["¡Great job! 🎉","¡Perfect! ⭐","¡Excellent! 🌟","¡Super! 👏"][Math.floor(Math.random()*4)];setTimeout(()=>speak(it.say),350)}
+  else{sfxBad();msg.className="msg bad";msg.innerHTML=reveal||("Era: <b>"+it.word+"</b>");setTimeout(()=>speak(it.say),350)}
+  const nr=$("#nextRow");nr.innerHTML=`<button class="btn" id="nx">${Q.i+1>=Q.qs.length?"Ver resultado 🏁":"Siguiente ➡️"}</button>`;
+  $("#nx").onclick=()=>{Q.i++;nextQ()};
+  $("#nx").focus();
+}
+function wire(kind,it){
+  const sp=$("#spk"),sp2=$("#spk2");
+  if(sp){sp.onclick=()=>speak(it.say);setTimeout(()=>speak(it.say),300)}
+  if(sp2)sp2.onclick=()=>speak(it.say);
+  if(kind==="listen"||kind==="read"){
+    app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      if(Q.done)return;
+      const ok=b.dataset.id===it.id;
+      b.classList.add(ok?"ok":"bad");
+      if(!ok){const c=app.querySelector(`.opt[data-id="${it.id}"]`);c&&c.classList.add("ok");b.classList.add("shake")}
+      answer(ok,it,ok?null:`Era: <b>${it.word}</b> ${it.kind==="num"?`(${it.vis})`:""}`);
+    });
+  }
+  if(kind==="write"){
+    const inp=$("#inp");inp.focus();
+    const check=()=>{
+      if(Q.done)return;
+      const v=norm(inp.value);if(!v)return;
+      const ok=it.accept.includes(v);
+      if(ok){inp.classList.add("ok");answer(true,it)}
+      else{
+        Q.tries++;inp.classList.remove("bad");void inp.offsetWidth;inp.classList.add("bad","shake");sfxBad();
+        if(Q.tries>=2){inp.classList.add("bad");answer(false,it)}
+        else{const w=it.word;$("#msg").className="msg bad";$("#msg").textContent="Casi… empieza con “"+w.slice(0,Math.min(3,w.length))+"…” ¡Probá de nuevo!"}
+      }
+    };
+    $("#chk").onclick=check;inp.onkeydown=e=>{if(e.key==="Enter")check()};
+  }
+  if(kind==="say"){
+    $("#hint").onclick=()=>{$("#hintTxt").textContent=it.word};
+    if(SR){
+      const mic=$("#mic");let rec=null;
+      mic.onclick=()=>{
+        if(Q.done)return;
+        if(rec){try{rec.stop()}catch(e){}return}
+        try{speechSynthesis.cancel()}catch(e){}
+        rec=new SR();rec.lang="en-US";rec.maxAlternatives=6;rec.interimResults=false;
+        mic.classList.add("rec");$("#msg").className="msg";$("#msg").textContent="Te escucho… 👂";
+        let heard=[];
+        rec.onresult=e=>{for(const r of e.results[0])heard.push(r.transcript)};
+        rec.onerror=e=>{mic.classList.remove("rec");rec=null;$("#msg").className="msg bad";$("#msg").textContent=e.error==="not-allowed"?"Permití el micrófono en el navegador 🎤":"No te escuché bien, probá otra vez."};
+        rec.onend=()=>{
+          mic.classList.remove("rec");rec=null;if(Q.done||!heard.length)return;
+          const ok=heard.some(h=>{const n=norm(h);return it.accept.includes(n)||(it.digits&&n===it.digits)||it.accept.some(a=>n.includes(a))});
+          if(ok)answer(true,it);
+          else{Q.tries++;sfxBad();$("#msg").className="msg bad";$("#msg").innerHTML=`Escuché: “${heard[0]}”. ¡Probá otra vez!`;if(Q.tries>=3)answer(false,it,`Se dice: <b>${it.word}</b>`)}
+        };
+        rec.start();
+      };
+    } else {
+      $("#selfOk").onclick=()=>answer(true,it);
+      $("#selfBad").onclick=()=>answer(false,it,`Escuchá y repetí: <b>${it.word}</b>`);
+    }
+  }
+}
+function finish(){
+  const pct=Q.score/Q.qs.length;
+  const st=pct>=.9?3:pct>=.6?2:pct>=.3?1:0;
+  setStars(stars+Q.score);
+  if(pct>=.6)confetti();
+  app.innerHTML=`<div class="qcard result">
+    <div style="font-size:70px">${st>=3?"🏆":st==2?"🥳":st==1?"🙂":"💪"}</div>
+    <h2 style="margin:0">${Q.score} de ${Q.qs.length} correctas</h2>
+    <div class="stars">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>
+    <p>${st>=3?"¡Increíble! You're a star!":st==2?"¡Muy bien! Keep going!":"¡Practicando se aprende! Try again!"}</p>
+    <div class="row"><button class="btn green" id="again">🔁 Otra vez</button><button class="btn alt" id="menu">Menú</button></div></div>`;
+  $("#again").onclick=()=>startQuiz(Q.mode);
+  $("#menu").onclick=()=>topic(T);
+}
+home();
+</script>
+</body>
+</html>
