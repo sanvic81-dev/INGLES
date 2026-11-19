@@ -247,10 +247,10 @@ function playPCM(buf){
 }
 /* pre-generated files in ./audio (made with tools/generar_audios.py) */
 const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-const missing=new Set();let fileAudio=null;
+const missing=new Set();let fileAudio=null;const KNOWN=new Set([...NUMS,...STORY].map(x=>x.say).concat(["forest"]));
 function playFile(text){
   return new Promise((resolve,reject)=>{
-    const s=slug(text);if(missing.has(s))return reject();
+    const s=slug(text);if(missing.has(s)||!KNOWN.has(text))return reject();
     const exts=["mp3","wav"];
     const tryNext=()=>{
       const ext=exts.shift();if(!ext){missing.add(s);return reject()}
@@ -373,25 +373,43 @@ function topic(t){
 }
 
 /* ---- learn ---- */
+const DEC_LABEL={d1:"11–19",d2:"20s",d3:"30s",d4:"40s",d5:"50s",d6:"60s",d7:"70s",d8:"80s",d9:"90s",d10:"100",tens:"20, 30… 100",all:"Todos"};
+const DEC_FILTER={d1:n=>n<=19,d2:n=>n>=20&&n<=29,d3:n=>n>=30&&n<=39,d4:n=>n>=40&&n<=49,d5:n=>n>=50&&n<=59,d6:n=>n>=60&&n<=69,d7:n=>n>=70&&n<=79,d8:n=>n>=80&&n<=89,d9:n=>n>=90&&n<=99,d10:n=>n===100,tens:n=>n%10===0,all:()=>true};
+/* ejemplos con el cuento: {n} se reemplaza por el número en inglés */
+const EXAMPLES={
+ d1:[[13,"Little Red Riding Hood has {n} flowers."],[15,"There are {n} trees in the wood."],[18,"The wolf has {n} teeth!"]],
+ d2:[[20,"Grandma has {n} cookies in the basket."],[24,"The woodcutter cuts {n} logs."],[27,"There are {n} birds in the wood."]],
+ d3:[[30,"The wolf walks {n} steps."],[35,"Grandma is {n} years old in my drawing."],[39,"I see {n} flowers."]],
+ d4:[[40,"Little Red Riding Hood walks {n} minutes."],[44,"The wolf has {n} funny hairs."],[48,"There are {n} trees in the wood."]],
+ d5:[[50,"The woodcutter has {n} logs."],[55,"There are {n} flowers near the house."],[59,"I count {n} stars at night."]],
+ d6:[[60,"The basket has {n} strawberries."],[66,"The wolf runs {n} steps."],[69,"I see {n} butterflies."]],
+ d7:[[70,"Grandma's house is {n} steps away."],[75,"The wood has {n} tall trees."],[79,"I draw {n} flowers."]],
+ d8:[[80,"The woodcutter has {n} logs."],[85,"There are {n} leaves on the ground."],[89,"I count {n} stars."]],
+ d9:[[90,"The wood has {n} trees."],[95,"Little Red Riding Hood picks {n} flowers."],[99,"The wolf counts {n} sheep."]],
+ d10:[[100,"The big bad wolf has {n} sheep."],[100,"I can count to {n}!"]],
+};
 function learn(){
   const isNum=T==="num";
-  let tab=isNum?"teens":null;
+  let tab=isNum?"d1":null;
   const draw=()=>{
-    let list,extra="";
+    let list,extra="",ex="";
     if(isNum){
-      const f=tab==="teens"?(n=>n<=19):tab==="tens"?(n=>n%10===0):tab==="all"?(()=>true):(n=>n>=20&&n<=59);
-      list=NUMS.filter(x=>f(x.n));
-      if(tab==="teens"||tab==="tens"||tab==="all"){
+      list=NUMS.filter(x=>DEC_FILTER[tab](x.n));
+      if(tab==="d1"||tab==="tens"||tab==="all"){
         extra=`<div class="tip"><b>¡Ojo con -teen y -ty!</b> Suenan parecido pero el acento cambia:<br>
         <b>thir<u>TEEN</u></b> (13, acento al final) ≠ <b><u>THIR</u>ty</b> (30, acento al principio).
         <div class="pairs">${[3,4,5,6,7,8,9].map(d=>`<div class="pair"><button data-say="${numWord(10+d)}">${10+d}<small>${ONES[10+d]}</small></button><button data-say="${numWord(d*10)}">${d*10}<small>${TENS[d]}</small></button></div>`).join("")}</div></div>`;
       }
+      const keys=tab==="all"||tab==="tens"?Object.keys(EXAMPLES):(EXAMPLES[tab]?[tab]:[]);
+      const rows=keys.flatMap(k=>EXAMPLES[k]);
+      if(rows.length)ex=`<h2 class="sec">📚 Ejemplos</h2><div class="grid">${rows.map(([n,t])=>{const sent=t.replace("{n}",numWord(n).replace("-"," "));const shown=t.replace("{n}",`<b>${numWord(n)}</b> (${n})`);return `<button class="mode" data-say="${sent}"><span class="emo">🔊</span><span>${shown}</span></button>`}).join("")}</div>`;
     } else list=STORY;
     app.innerHTML=`
     <button class="btn alt back" id="bk">← Volver</button>
-    ${isNum?`<div class="tabs">${[["teens","11–19"],["tens","20, 30…100"],["mid","20–59"],["all","Todos"]].map(([k,l])=>`<button class="tab ${k===tab?"on":""}" data-t="${k}">${l}</button>`).join("")}</div>`:`<h2 style="margin:0 0 10px">Tocá una tarjeta 👆</h2>`}
+    ${isNum?`<div class="tabs">${Object.keys(DEC_LABEL).map(k=>`<button class="tab ${k===tab?"on":""}" data-t="${k}">${DEC_LABEL[k]}</button>`).join("")}</div>`:`<h2 style="margin:0 0 10px">Tocá una tarjeta 👆</h2>`}
     ${extra}
-    <div class="grid gcards" style="margin-top:14px">${list.map(x=>`<button class="num ${x.kind}" data-say="${x.say}"><div class="d">${x.vis}</div><div class="w">${x.word}</div>${x.es?`<div class="es">${x.es}</div>`:""}</button>`).join("")}</div>`;
+    <div class="grid gcards" style="margin-top:14px">${list.map(x=>`<button class="num ${x.kind}" data-say="${x.say}"><div class="d">${x.vis}</div><div class="w">${x.word}</div>${x.es?`<div class="es">${x.es}</div>`:""}</button>`).join("")}</div>
+    ${ex}`;
     $("#bk").onclick=()=>topic(T);
     app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=b.dataset.t;draw()});
     app.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>{b.classList.add("playing");speak(b.dataset.say).then(()=>b.classList.remove("playing"))});
