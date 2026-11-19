@@ -37,6 +37,7 @@
   .mode{background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--shadow);text-align:left;display:flex;gap:12px;align-items:center}
   .mode .emo{font-size:30px}
   .mode b{display:block} .mode small{color:var(--dim)}
+  .mode .ex b{display:inline;color:var(--purple)}
   .back{margin-bottom:10px}
   .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
   .tab{background:var(--card);border-radius:999px;padding:8px 14px;font-weight:800;box-shadow:var(--shadow)}
@@ -402,7 +403,7 @@ function learn(){
       }
       const keys=tab==="all"||tab==="tens"?Object.keys(EXAMPLES):(EXAMPLES[tab]?[tab]:[]);
       const rows=keys.flatMap(k=>EXAMPLES[k]);
-      if(rows.length)ex=`<h2 class="sec">📚 Ejemplos</h2><div class="grid">${rows.map(([n,t])=>{const sent=t.replace("{n}",numWord(n).replace("-"," "));const shown=t.replace("{n}",`<b>${numWord(n)}</b> (${n})`);return `<button class="mode" data-say="${sent}"><span class="emo">🔊</span><span>${shown}</span></button>`}).join("")}</div>`;
+      if(rows.length)ex=`<h2 class="sec">📚 Ejemplos</h2><div class="grid">${rows.map(([n,t])=>{const sent=t.replace("{n}",numWord(n).replace("-"," "));const shown=t.replace("{n}",`<b>${numWord(n)}</b> (${n})`);return `<button class="mode" data-say="${sent}"><span class="emo">🔊</span><span class="ex">${shown}</span></button>`}).join("")}</div>`;
     } else list=STORY;
     app.innerHTML=`
     <button class="btn alt back" id="bk">← Volver</button>
