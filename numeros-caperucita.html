@@ -402,16 +402,15 @@ const COUNTERS=[{w:"flowers",e:"🌸"},{w:"loaves of bread",e:"🍞"},{w:"basket
 
 function topic(t){
   T=t;const isNum=t==="num";
-  const unlocked=store.get("eq_quest",{num:1,story:1})[t]||1;
-  app.innerHTML=`
+    app.innerHTML=`
   <button class="btn alt back" id="bk">← Inicio</button>
   <h2 style="margin:0 0 6px">${isNum?"🔢 Planeta Numbers":"🐺 Planeta Red Riding Hood"}</h2>
   <h2 class="sec">📖 Aprender</h2>
   <button class="mode" id="mLearn" style="width:100%"><span class="emo">${isNum?"🗂️":"🃏"}</span><span><b>${isNum?"Números por decena, con ejemplos":"Tarjetas de palabras"}</b><small>Tocá para escuchar y mirá cómo se pronuncia</small></span></button>
   ${isNum?`<h2 class="sec">¿Qué números practicar?</h2><div class="tabs" id="rtabs">${Object.entries(RANGES).map(([k,v])=>`<button class="tab ${k===range?"on":""}" data-r="${k}">${v.label}</button>`).join("")}</div>`:""}
   <h2 class="sec">🚀 Misión de escritura</h2>
-  ${QUEST_STAGES.map((st,i)=>`<button class="stage ${i<unlocked?"":"lock"}" data-q="${i}" ${i<unlocked?"":"disabled"}><span class="emo">${i<unlocked?st.e:"🔒"}</span><span><b>Etapa ${i+1}: ${st.n}</b><small>${st.d}</small></span></button>`).join("")}
-  <p class="small">Cada etapa: 8 preguntas y 3 vidas ❤️. Con 6 aciertos o más pasás a la siguiente.</p>
+  ${QUEST_STAGES.map((st,i)=>`<button class="stage" data-q="${i}"><span class="emo">${st.e}</span><span><b>Etapa ${i+1}: ${st.n}</b><small>${st.d}</small></span></button>`).join("")}
+  <p class="small">Cada etapa: 8 preguntas y 3 vidas ❤️. Podés jugar las etapas en el orden que quieras.</p>
   <h2 class="sec">🎮 Otros juegos (10 preguntas)</h2>
   <div class="grid g2">
     <button class="mode" data-m="listen"><span class="emo">👂</span><span><b>Escucha y elige</b><small>Oís ${isNum?"el número":"la palabra"} y tocás la respuesta</small></span></button>
@@ -483,6 +482,7 @@ function poolFor(){
 function startQuiz(mode,stage){
   const isQ=mode==="quest";
   let pool=poolFor();
+  if(isQ&&QUEST_STAGES[stage].k==="tiles")pool=pool.filter(x=>x.say.replace(/[^a-z]/gi,"").length<=14);
   if(mode==="count"){pool=NUMS.filter(x=>x.n<=30&&RANGES[range].f(x.n));if(pool.length<3)pool=NUMS.filter(x=>x.n<=30)}
   const items=weightedPick(pool,Math.min(isQ?8:10,pool.length));
   const modes=T==="num"?["listen","read","write","say","count"]:["listen","read","write","say"];
@@ -690,10 +690,9 @@ function finish(){
     passed=Q.hearts>0&&Q.score>=6;
     if(passed){
       bonus=Q.stage===3?100:50;
-      const qs=store.get("eq_quest",{num:1,story:1});
-      if(Q.stage<3&&(qs[T]||1)<Q.stage+2){qs[T]=Q.stage+2;store.set("eq_quest",qs);extra=`<p><b>🔓 ¡Etapa ${Q.stage+2} desbloqueada!</b></p>`}
+      if(Q.stage<3)extra=`<p><b>✅ ¡Etapa ${Q.stage+1} superada!</b></p>`;
       if(Q.stage===3)extra=`<p><b>🏅 ¡Medalla de Jefe final! Dominaste este planeta.</b></p>`;
-    } else extra=`<p>${Q.hearts<=0?"Te quedaste sin vidas 💔":"Necesitás 6 aciertos para pasar"}. ¡Intentalo de nuevo!</p>`;
+    } else extra=`<p>${Q.hearts<=0?"Te quedaste sin vidas 💔":"Necesitás 6 aciertos para superar la etapa"}. ¡Intentalo de nuevo!</p>`;
   } else bonus=pct>=.6?20:0;
   const gain=Q.xpGain+bonus;
   addXP(gain);touchStreak();
